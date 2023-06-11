@@ -80,8 +80,10 @@ _debug() {
 
 _run() {
   echo ">>> Running $app - $mode"
+
   cd $build_dir
-  ./$app
+  selected=$(/bin/ls ../../tests/ -p | grep -v / | fzf --header="files:")
+  ./$app ../../tests/$selected
   cd ../..
 }
 
