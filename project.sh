@@ -74,7 +74,8 @@ _build() {
 
 _debug() {
   cd $build_dir
-  seergdb -s $app
+  selected=$(/bin/ls ../../tests/ -p | grep -v / | fzf --header="files:")
+  seergdb -s $app ../../tests/$selected
   cd ../..
 }
 
