@@ -1,19 +1,23 @@
+#include "kutil.h"
 #include "scanner.h"
-#include "logger.h"
 
-void usage(char *program)
+static int
+usage(char *program)
 {
-  fprintf(stderr, "Usage: %s <sourceFile>\n", program);
-  exit(EXIT_NEGATIVE);
+  if(NULL != program)
+  {
+    fprintf(stderr, "Usage: %s <sourceFile>\n", program);
+  }
+  return ERROR;
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
-  if (argc != 2)
+  if (2 != argc)
   {
-    usage(argv[0]);
+    return usage(argv[0]);
   }
-
   scan(argv[1]);
-  return EXIT_ZERO;
+  return SUCCESS;
 }

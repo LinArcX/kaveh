@@ -76,7 +76,7 @@ _debug() {
   echo ">>> Debugging $app - $mode"
   cd $build_dir
   selected=$(/bin/ls ../../tests/ -p | fzf --header="files:")
-  gdb --args $app ../../tests/$selected
+  gf2 --args $app ../../tests/$selected &
   cd ../..
 }
 
@@ -106,7 +106,7 @@ _findSymbolsInObj() {
 }
 
 p() {
-  commands=("build" "run" "clean" "debug" "search" "search/replace" "generate tags" "valgrind" "find strings in the binary" "list symbols from object files")
+  commands=("build" "run" "clean" "debug" "lint" "search" "search/replace" "generate tags" "valgrind" "find strings in the binary" "list symbols from object files")
   selected=$(printf '%s\n' "${commands[@]}" | fzf --header="project:")
 
   case $selected in
@@ -118,6 +118,8 @@ p() {
       _run;;
     "clean")
       _clean;;
+    "lint")
+      splint src/* | less;;
     "search")
       read -p "keyword: " p_keyword; rg "$p_keyword" ;;
     "search/replace")

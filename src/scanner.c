@@ -1,38 +1,42 @@
 #include <errno.h>
-
 #include "scanner.h"
-#include "logger.h"
+#include "kutil.h"
 
 int   line = 1;
 int	  lastChar = '\n';
 FILE  *p_sourceFile;
 
-char* stringOfTokenType(int type)
+char*
+stringOfTokenType(int type)
 {
-  switch(type)
+  if(TOKEN_INTEGER == type)
   {
-    case TOKEN_INTEGER:
-      return "INTEGER";
-      break;
-    case TOKEN_PLUS:
-      return "+";
-      break;
-    case TOKEN_MINUS:
-      return "-";
-      break;
-    case TOKEN_STAR:
-      return "*";
-      break;
-    case TOKEN_SLASH:
-      return "/";
-      break;
-    default:
-      return "NIL";
-      break;
+    return "INTEGER";
+  }
+  else if(TOKEN_PLUS == type)
+  {
+    return "+";
+  }
+  else if(TOKEN_MINUS == type)
+  {
+    return "-";
+  }
+  else if(TOKEN_STAR == type)
+  {
+    return "*";
+  }
+  else if(TOKEN_SLASH == type)
+  {
+    return "/";
+  }
+  else
+  {
+    return "NIL";
   }
 }
 
-int nextChar()
+int
+nextChar()
 {
   int ch;
 
@@ -51,20 +55,19 @@ int nextChar()
   return ch;
 }
 
-static int charPositionInString(char *str, int ch)
+static int
+charPositionInString(char *str, int ch)
 {
   char* position = strchr(str, ch);
   if(position)
   {
     return position - str;
   }
-  else
-  {
-    return EXIT_NEGATIVE;
-  }
+  return -1;
 }
 
-static int scanInteger(int ch)
+static int
+scanInteger(int ch)
 {
   int k, val = 0;
 
@@ -80,7 +83,8 @@ static int scanInteger(int ch)
   return val;
 }
 
-int skipWhiteSpaces()
+int
+skipWhiteSpaces()
 {
   int ch = nextChar();
   while (' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch || '\f' == ch)
@@ -90,52 +94,59 @@ int skipWhiteSpaces()
   return (ch);
 }
 
-int tokenize(Token* token)
+int
+tokenize(Token* token)
 {
-  int ch = skipWhiteSpaces();
+  memset(token, 0, sizeof(Token));
 
-  switch (ch)
+  if(NULL != token)
   {
-  case EOF:
-    return EXIT_NEGATIVE;
-  case '+':
-    token->type = TOKEN_PLUS;
-    strcpy(token->literal.oprator, "+");
-    break;
-  case '-':
-    token->type = TOKEN_MINUS;
-    strcpy(token->literal.oprator, "-");
-    break;
-  case '*':
-    token->type = TOKEN_STAR;
-    strcpy(token->literal.oprator, "*");
-    break;
-  case '/':
-    token->type = TOKEN_SLASH;
-    strcpy(token->literal.oprator, "/");
-    break;
-  default:
-    if (isdigit(ch))
+    int ch = skipWhiteSpaces();
+
+    switch (ch)
     {
-      token->type = TOKEN_INTEGER;
-      token->literal.integer = scanInteger(ch);
+    case EOF:
+      return 0;
+    case '+':
+      token->type = TOKEN_PLUS;
+      kmemcpy(token->literal.oprator, "+");
       break;
+    case '-':
+      token->type = TOKEN_MINUS;
+      kmemcpy(token->literal.oprator, "-");
+      break;
+    case '*':
+      token->type = TOKEN_STAR;
+      kmemcpy(token->literal.oprator, "*");
+      break;
+    case '/':
+      token->type = TOKEN_SLASH;
+      kmemcpy(token->literal.oprator, "/");
+      break;
+    default:
+      if (isdigit(ch))
+      {
+        token->type = TOKEN_INTEGER;
+        token->literal.integer = scanInteger(ch);
+        break;
+      }
+
+      printf("Unrecognised character %c on line %d\n", ch, line);
+      exit(1);
     }
-
-    printf("Unrecognised character %c on line %d\n", ch, line);
-    exit(EXIT_NEGATIVE);
+    return 1;
   }
-
-  return EXIT_POSITIVE;
+  return 0;
 }
 
-void scan(char* sourceFile)
+void
+scan(char* sourceFile)
 {
   p_sourceFile = fopen(sourceFile, "r");
   if (NULL == p_sourceFile)
   {
     fprintf(stderr, "Unable to open %s: %s\n", sourceFile, strerror(errno));
-    exit(EXIT_NEGATIVE);
+    exit(-1);
   }
 
   Token token;

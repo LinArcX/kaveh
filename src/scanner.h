@@ -21,7 +21,7 @@ typedef enum
 
 typedef struct
 {
-  char oprator[2];
+  char oprator[2]; // 2 because one for operator and another for \0
   int integer;
 } TokenLiteral;
 
