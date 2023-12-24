@@ -71,6 +71,8 @@ p() {
     "readelf -s:Display the symbol table"
     "readelf -d: Display the dynamic section (if present)"
     "strace - trace system calls and signals"
+    "strace -c: Count time, calls, and errors for each system call"
+    "ltrace: trace library calls"
     "strings - print the sequences of printable characters in files"
     "size - list section sizes and total size of binary files")
   selected=$(printf '%s\n' "${commands[@]}" | fzf --header="project:")
@@ -149,6 +151,14 @@ p() {
       clear
       selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
       strace ./$build_dir/$app ./tests/$selected ;;
+    "strace -c: Count time, calls, and errors for each system call")
+      clear
+      selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
+      strace -c ./$build_dir/$app ./tests/$selected ;;
+    "ltrace: trace library calls")
+      clear
+      selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
+      ltrace ./$build_dir/$app ./tests/$selected ;;
     "strings - print the sequences of printable characters in files")
       clear
       strings $build_dir/$app ;;
