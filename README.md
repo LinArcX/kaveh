@@ -1,7 +1,9 @@
 # Kaveh
 A simple programming language.
 
-Got ideas from https://github.com/DoctorWkt/acwj
+Got ideas from:
+- https://github.com/DoctorWkt/acwj
+- https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html
 
 # Who's kaveh?
 "Kaveh the Blacksmith" is a 5000-year-old figure in Iranian mythology who leads a popular uprising against a ruthless foreign ruler, Zahāk.

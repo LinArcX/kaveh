@@ -1,8 +1,8 @@
 #!/usr/bin/bash
-###########################################################################################
+################################################################################
 #                                    kaveh
-###########################################################################################
-# there's a project.sh in root of the project. before do anything, source it: . project.sh
+################################################################################
+# There's a __project.sh__ at the root. load it first: `. project.sh`
 #
 # tools:
 # static code analyzer:
@@ -15,20 +15,27 @@
 #   folding/unfolding: z Shift+m, z Shift+r
 #   switch between source/header: F2
 #
-# lookup refrences: ctags
+# lookup refrences: lsp, ctags
 # find/replace in single file: neovim
 # find/replace in whole project: ambr <source_text> <dest_text>
 # find files: ctrl-t | ff <file-name> | fzf | fd
 # find string/text in single file: neovim (/)
 # find string/text in whole project: ft <text> | rg <text>
-# find docs of c standard librariy: install man-pages-devel and man <method>
+# find docs of c standard librariy: 
+#   - install man-pages-devel and man <method>
+#   - zeal
+#   - www.devdocs.io 
 #
-# debugging: gf2/gdb
-###########################################################################################
-# kaveh, test
+# debuggers: gf2, gdb
+################################################################################
 app=""
+compiler="cc"
+flags="-Wall -Wextra -Wpedantic -Wformat=2 -Wno-unused-parameter -Wshadow 
+  -Wwrite-strings -Wstrict-prototypes -Wold-style-definition -Wredundant-decls
+  -Wnested-externs -Wmissing-include-dirs
+  -Wjump-misses-init -Wlogical-op"
+src="src/*.c"
 
-# debug, release, test
 mode="debug"
 build_dir="build/$mode"
 
@@ -47,98 +54,91 @@ if [ "$mode" == "test" ]; then
   app="kaveh_test"
 fi
 
-_createBuildDir() {
-  echo ">>> Creating '$build_dir' directory"
-  mkdir -p "$build_dir"
-}
-
 _generateTags() {
   echo ">>> generating tags"
   ctags --fields=+iaSl --extras=+q --extras=+f --sort=yes -R src/*
 }
 
-_compile() {
-  compiler="cc"
-  flags="-Wall -Wextra -Wpedantic -Wformat=2 -Wno-unused-parameter -Wshadow 
-  -Wwrite-strings -Wstrict-prototypes -Wold-style-definition -Wredundant-decls
-  -Wnested-externs -Wmissing-include-dirs
-  -Wjump-misses-init -Wlogical-op"
-  src="src/*.c"
-
-  echo ">>> Compiling ($mode)"
-  $compiler $mode_flags $flags -o $build_dir/$app $src
-}
-
-_build() {
-  _createBuildDir
-  _generateTags
-  _compile
-}
-
-_debug() {
-  echo ">>> Debugging $app - $mode"
-  cd $build_dir
-  selected=$(/bin/ls ../../tests/ -p | fzf --header="files:")
-  gf2 --args $app ../../tests/$selected &
-  cd ../..
-}
-
-_run() {
-  echo ">>> Running $app - $mode"
-  cd $build_dir
-  selected=$(/bin/ls ../../tests/ -p | fzf --header="files:")
-  ./$app ../../tests/$selected
-  cd ../..
-}
-
-_clean() {
-  echo ">>> Cleaning '$build_dir' directory"
-  rm -r "$build_dir"
-}
-
-_valgrind() {
-  valgrind --leak-check=full --show-leak-kinds=all -s -v $build_dir/$app #src/*
-}
-
-_findStrings() {
-  strings $build_dir/$app | less
-}
-
-_findSymbolsInObj() {
-  nm $build_dir/$app | less
-}
-
 p() {
-  commands=("build" "run" "clean" "debug" "lint(splint)" "lint(cppcheck)" "search" "search/replace" "generate tags" "valgrind" "find strings in the binary" "list symbols from object files")
+  commands=("build" "debug" "run" "clean" "generate tags"
+    "search" "search/replace"
+    "linter - splint" "linter - cppcheck" "valgrind"
+    "nm - list symbols from object files" "ldd - print shared object dependencies"
+    "objdump -S: Intermix source code with disassembly"
+    "objdump -g: Display debug information in object file"
+    "objdump -d: Display assembler contents of executable sections"
+    "strace - trace system calls and signals"
+    "strings - print the sequences of printable characters in files")
   selected=$(printf '%s\n' "${commands[@]}" | fzf --header="project:")
 
   case $selected in
     "build")
-      _build;;
+      clear
+      echo ">>> Creating '$build_dir' directory"
+      mkdir -p "$build_dir"
+      _generateTags
+      echo ">>> Compiling ($mode)"
+      $compiler $mode_flags $flags -o $build_dir/$app $src
+      ;;
     "debug")
-      _debug;;
+      echo ">>> Debugging $app - $mode"
+      selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
+      gf2 --args ./$build_dir/$app ./tests/$selected &
+      ;;
     "run")
-      _run;;
+      echo ">>> Running $app - $mode"
+      selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
+      ./$build_dir/$app ./tests/$selected
+      ;;
     "clean")
-      _clean;;
-    "lint(splint)")
-      splint +trytorecover src/*;;
-    "lint(cppcheck)")
-      cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem --language=c src/;;
+      clear
+      echo ">>> Cleaning '$build_dir' directory"
+      rm -r "$build_dir";;
+    "generate tags")
+      clear
+      _generateTags;;
+
     "search")
+      clear
       read -p "keyword: " p_keyword; rg "$p_keyword" ;;
     "search/replace")
+      clear
       read -p "to_search: " to_search
       read -p "to_replace: " to_replace
       ambr "$to_search" "$to_replace" ;;
-    "generate tags")
-      _generateTags;;
+
+    "linter - splint")
+      clear
+      splint +trytorecover src/*;;
+    "linter - cppcheck")
+      clear
+      cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem --language=c src/;;
     "valgrind")
-      _valgrind;;
-    "find strings in the binary")
-      _findStrings;;
-    "list symbols from object files")
-      _findSymbolsInObj;;
+      clear
+      valgrind --leak-check=full --show-leak-kinds=all -s -v $build_dir/$app;; #src/*
+
+    "nm - list symbols from object files")
+      clear
+      nm $build_dir/$app;;
+    "ldd - print shared object dependencies")
+      clear
+      ldd $build_dir/$app;;
+    "objdump -S: Intermix source code with disassembly")
+      clear
+      objdump ./$build_dir/$app -S | less ;;
+    "objdump -g: Display debug information in object file")
+      clear
+      objdump ./$build_dir/$app -g | less;;
+    "objdump -d: Display assembler contents of executable sections")
+      clear
+      objdump ./$build_dir/$app -d | less;;
+    "strace - trace system calls and signals")
+      clear
+      selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
+      strace ./$build_dir/$app ./tests/$selected ;;
+    "strings - print the sequences of printable characters in files")
+      clear
+      strings $build_dir/$app ;;
     *) ;;
   esac
 }
