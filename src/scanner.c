@@ -61,7 +61,7 @@ tokenTypeString(int type, char * const tokenName)
 }
 
 static int
-nextChar()
+nextChar(void)
 {
   int ch;
 
@@ -110,7 +110,7 @@ scanInteger(int ch)
 }
 
 static char
-skipWhiteSpaces()
+skipWhiteSpaces(void)
 {
   char ch = nextChar();
   while (' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch || '\f' == ch)

@@ -59,7 +59,10 @@ _generateTags() {
 
 _compile() {
   compiler="cc"
-  flags="-lm"
+  flags="-Wall -Wextra -Wpedantic -Wformat=2 -Wno-unused-parameter -Wshadow 
+  -Wwrite-strings -Wstrict-prototypes -Wold-style-definition -Wredundant-decls
+  -Wnested-externs -Wmissing-include-dirs
+  -Wjump-misses-init -Wlogical-op"
   src="src/*.c"
 
   echo ">>> Compiling ($mode)"
@@ -94,7 +97,7 @@ _clean() {
 }
 
 _valgrind() {
-  valgrind --leak-check=yes --show-leak-kinds=all -s -v $build_dir/$app
+  valgrind --leak-check=full --show-leak-kinds=all -s -v $build_dir/$app #src/*
 }
 
 _findStrings() {
