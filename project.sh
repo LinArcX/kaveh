@@ -67,8 +67,12 @@ p() {
     "objdump -S: Intermix source code with disassembly"
     "objdump -g: Display debug information in object file"
     "objdump -d: Display assembler contents of executable sections"
+    "readelf -h: Display the ELF file header"
+    "readelf -s:Display the symbol table"
+    "readelf -d: Display the dynamic section (if present)"
     "strace - trace system calls and signals"
-    "strings - print the sequences of printable characters in files")
+    "strings - print the sequences of printable characters in files"
+    "size - list section sizes and total size of binary files")
   selected=$(printf '%s\n' "${commands[@]}" | fzf --header="project:")
 
   case $selected in
@@ -132,6 +136,15 @@ p() {
     "objdump -d: Display assembler contents of executable sections")
       clear
       objdump ./$build_dir/$app -d | less;;
+    "readelf -h: Display the ELF file header")
+      clear
+      readelf ./$build_dir/$app -h;;
+    "readelf -s:Display the symbol table")
+      clear
+      readelf ./$build_dir/$app -s;;
+    "readelf -d: Display the dynamic section (if present)")
+      clear
+      readelf ./$build_dir/$app -d;;
     "strace - trace system calls and signals")
       clear
       selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
@@ -139,6 +152,9 @@ p() {
     "strings - print the sequences of printable characters in files")
       clear
       strings $build_dir/$app ;;
+    "size - list section sizes and total size of binary files")
+      clear
+      size $build_dir/$app ;;
     *) ;;
   esac
 }
