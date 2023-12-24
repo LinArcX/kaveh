@@ -31,6 +31,6 @@ typedef struct
   TokenLiteral literal;
 } Token;
 
-void scan(char* sourceFile);
+int scan(const char* sourceFile);
 
 #endif

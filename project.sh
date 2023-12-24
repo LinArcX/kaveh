@@ -6,7 +6,7 @@
 #
 # tools:
 # static code analyzer:
-#   - c: splint
+#   - c: splint, cppcheck
 # memory debugger: valgrind
 # system call tracer: strace
 # display info about .obj files: objdump
@@ -106,7 +106,7 @@ _findSymbolsInObj() {
 }
 
 p() {
-  commands=("build" "run" "clean" "debug" "lint" "search" "search/replace" "generate tags" "valgrind" "find strings in the binary" "list symbols from object files")
+  commands=("build" "run" "clean" "debug" "lint(splint)" "lint(cppcheck)" "search" "search/replace" "generate tags" "valgrind" "find strings in the binary" "list symbols from object files")
   selected=$(printf '%s\n' "${commands[@]}" | fzf --header="project:")
 
   case $selected in
@@ -118,8 +118,10 @@ p() {
       _run;;
     "clean")
       _clean;;
-    "lint")
-      splint src/* | less;;
+    "lint(splint)")
+      splint +trytorecover src/*;;
+    "lint(cppcheck)")
+      cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem --language=c src/;;
     "search")
       read -p "keyword: " p_keyword; rg "$p_keyword" ;;
     "search/replace")

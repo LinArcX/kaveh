@@ -1,41 +1,66 @@
 #include <errno.h>
+#include <stdlib.h>
+
 #include "scanner.h"
 #include "kutil.h"
 
+#define outTokenStringLenght 100
+
 int   line = 1;
-int	  lastChar = '\n';
+int	  lastChar = 0;
 FILE  *p_sourceFile;
 
-char*
-stringOfTokenType(int type)
+static int
+tokenTypeString(int type, char * const tokenName)
 {
+  memset(tokenName, 0, outTokenStringLenght);
+
   if(TOKEN_INTEGER == type)
   {
-    return "INTEGER";
+    if(EXIT_SUCCESS != kmemcpy(tokenName, "INTEGER"))
+    {
+      return die();
+    }
   }
   else if(TOKEN_PLUS == type)
   {
-    return "+";
+    if(EXIT_SUCCESS != kmemcpy(tokenName, "+"))
+    {
+      return die();
+    }
   }
   else if(TOKEN_MINUS == type)
   {
-    return "-";
+    if(EXIT_SUCCESS != kmemcpy(tokenName, "-"))
+    {
+      return die();
+    }
   }
   else if(TOKEN_STAR == type)
   {
-    return "*";
+    if(EXIT_SUCCESS != kmemcpy(tokenName, "*"))
+    {
+      return die();
+    }
   }
   else if(TOKEN_SLASH == type)
   {
-    return "/";
+    if(EXIT_SUCCESS != kmemcpy(tokenName, "/"))
+    {
+      return die();
+    }
   }
   else
   {
-    return "NIL";
+    if(EXIT_SUCCESS != kmemcpy(tokenName, "NIL"))
+    {
+      return die();
+    }
   }
+  return EXIT_SUCCESS;
 }
 
-int
+static int
 nextChar()
 {
   int ch;
@@ -56,9 +81,9 @@ nextChar()
 }
 
 static int
-charPositionInString(char *str, int ch)
+charPositionInString(const char * str, int ch)
 {
-  char* position = strchr(str, ch);
+  const char * position = strchr(str, ch);
   if(position)
   {
     return position - str;
@@ -69,7 +94,8 @@ charPositionInString(char *str, int ch)
 static int
 scanInteger(int ch)
 {
-  int k, val = 0;
+  int k;
+  int val = 0;
 
   // Convert each character into an int value
   while ((k = charPositionInString("0123456789", ch)) >= 0)
@@ -83,10 +109,10 @@ scanInteger(int ch)
   return val;
 }
 
-int
+static char
 skipWhiteSpaces()
 {
-  int ch = nextChar();
+  char ch = nextChar();
   while (' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch || '\f' == ch)
   {
     ch = nextChar();
@@ -101,68 +127,101 @@ tokenize(Token* token)
 
   if(NULL != token)
   {
-    int ch = skipWhiteSpaces();
+    char ch = skipWhiteSpaces();
 
-    switch (ch)
+    if(EOF == ch)
     {
-    case EOF:
-      return 0;
-    case '+':
+      return EXIT_FAILURE;
+    }
+    else if('+' == ch)
+    {
       token->type = TOKEN_PLUS;
-      kmemcpy(token->literal.oprator, "+");
-      break;
-    case '-':
+      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "+"))
+      {
+        return die();
+      }
+      return EXIT_SUCCESS;
+    }
+    else if('-' == ch)
+    {
       token->type = TOKEN_MINUS;
-      kmemcpy(token->literal.oprator, "-");
-      break;
-    case '*':
+      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "-"))
+      {
+        return die();
+      }
+      return EXIT_SUCCESS;
+    }
+    else if('*' == ch)
+    {
       token->type = TOKEN_STAR;
-      kmemcpy(token->literal.oprator, "*");
-      break;
-    case '/':
+      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "*"))
+      {
+        return die();
+      }
+      return EXIT_SUCCESS;
+    }
+    else if('/' == ch)
+    {
       token->type = TOKEN_SLASH;
-      kmemcpy(token->literal.oprator, "/");
-      break;
-    default:
+      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "/"))
+      {
+        return die();
+      }
+      return EXIT_SUCCESS;
+    }
+    else 
+    {
       if (isdigit(ch))
       {
         token->type = TOKEN_INTEGER;
         token->literal.integer = scanInteger(ch);
-        break;
+        return EXIT_SUCCESS;
       }
-
-      printf("Unrecognised character %c on line %d\n", ch, line);
-      exit(1);
     }
-    return 1;
+    fprintf(stderr, "[ERROR] Unrecognised character %c on line %d\n", ch, line);
+    exit(EXIT_FAILURE);
   }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
-void
-scan(char* sourceFile)
+int
+scan(const char* sourceFile)
 {
   p_sourceFile = fopen(sourceFile, "r");
   if (NULL == p_sourceFile)
   {
     fprintf(stderr, "Unable to open %s: %s\n", sourceFile, strerror(errno));
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
 
   Token token;
-  while (tokenize(&token))
+  char outTokenString[outTokenStringLenght] = {'\0'};
+
+  while (EXIT_SUCCESS == tokenize(&token))
   {
-    switch(token.type)
+    if(EXIT_SUCCESS == tokenTypeString(token.type, outTokenString))
     {
-      case TOKEN_PLUS:
-      case TOKEN_MINUS:
-      case TOKEN_STAR:
-      case TOKEN_SLASH:
-        printf("Token %s, literal %s\n", stringOfTokenType(token.type), token.literal.oprator);
-        break;
-      case TOKEN_INTEGER:
-        printf("Token %s, literal %d\n", stringOfTokenType(token.type), token.literal.integer);
-        break;
+      if(TOKEN_PLUS == token.type)
+      {
+        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
+      }
+      else if(TOKEN_MINUS == token.type)
+      {
+        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
+      }
+      else if(TOKEN_STAR == token.type)
+      {
+        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
+      }
+      else if(TOKEN_SLASH == token.type)
+      {
+        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
+      }
+      else if(TOKEN_INTEGER == token.type)
+      {
+        printf("Token %s, literal %d\n", outTokenString, token.literal.integer);
+      }
     }
   }
+  return EXIT_SUCCESS;
 }

@@ -1,14 +1,14 @@
-#include "kutil.h"
 #include "scanner.h"
 
 static int
-usage(char *program)
+usage(const char *program)
 {
   if(NULL != program)
   {
     fprintf(stderr, "Usage: %s <sourceFile>\n", program);
+    return EXIT_SUCCESS;
   }
-  return ERROR;
+  return EXIT_FAILURE;
 }
 
 int
@@ -18,6 +18,5 @@ main(int argc, char *argv[])
   {
     return usage(argv[0]);
   }
-  scan(argv[1]);
-  return SUCCESS;
+  return scan(argv[1]);
 }

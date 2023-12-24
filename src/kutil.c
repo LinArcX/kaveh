@@ -1,4 +1,7 @@
 #include "kutil.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int
@@ -21,7 +24,14 @@ kmemcpy(void *dest, const void *src)
     {
       memcpy(dest, src, srcSize);
     }
-    return SUCCESS;
+    return EXIT_SUCCESS;
   }
-  return DEST_SMALLER_THAN_SRC;
+  return KDEST_SMALLER_THAN_SRC;
+}
+
+int
+die(void)
+{
+  fprintf(stderr, "[ERROR] file: %s, line: %d", __FILE__, __LINE__);
+  return EXIT_FAILURE;
 }
