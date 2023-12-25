@@ -1,22 +1,28 @@
-#include "scanner.h"
+#include <stdlib.h>
+#include <errno.h>
 
-static int
-usage(const char *program)
-{
-  if(NULL != program)
-  {
-    fprintf(stderr, "Usage: %s <sourceFile>\n", program);
-    return EXIT_SUCCESS;
-  }
-  return EXIT_FAILURE;
-}
+#include "scanner.h"
+#include "parser.h"
+#include "kutil.h"
 
 int
 main(int argc, char *argv[])
 {
   if (2 != argc)
   {
-    return usage(argv[0]);
+    die2s("Usage: %s <sourceFile>\n", argv[0]);
   }
-  return scan(argv[1]);
+
+  p_sourceFile = fopen(argv[1], "r");
+  if (NULL == p_sourceFile)
+  {
+    die3s("Unable to open %s: %s\n", argv[1], strerror(errno));
+  }
+
+  scan(&token);
+  struct ASTnode *node;
+  node = binexpr(&token);		// Parse the expression in the file
+  printf("%d\n", interpretAST(node));	// Calculate the final result
+  
+  return EXIT_SUCCESS;
 }

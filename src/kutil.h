@@ -5,7 +5,16 @@ enum KERROR {
   KDEST_SMALLER_THAN_SRC = 10000
 };
 
-int kmemcpy(void *dest, const void *src);
-int die(void);
+void kmemcpy(void *dest, const void *src);
+
+int kerror(void);
+void kerror2i(char* message, int arg1, int arg2);
+
+void die(void);
+void die1i(char*, int);
+void die2i(char*, int, int);
+void die1s(char*);
+void die2s(char*, char*);
+void die3s(char*, char*, char*);
 
 #endif

@@ -5,59 +5,41 @@
 #include "kutil.h"
 
 #define outTokenStringLenght 100
+Token token;
 
 int   line = 1;
 int	  lastChar = 0;
 FILE  *p_sourceFile;
 
-static int
+static void
 tokenTypeString(int type, char * const tokenName)
 {
   memset(tokenName, 0, outTokenStringLenght);
 
   if(TOKEN_INTEGER == type)
   {
-    if(EXIT_SUCCESS != kmemcpy(tokenName, "INTEGER"))
-    {
-      return die();
-    }
+    kmemcpy(tokenName, "INTEGER");
   }
   else if(TOKEN_PLUS == type)
   {
-    if(EXIT_SUCCESS != kmemcpy(tokenName, "+"))
-    {
-      return die();
-    }
+    kmemcpy(tokenName, "+");
   }
   else if(TOKEN_MINUS == type)
   {
-    if(EXIT_SUCCESS != kmemcpy(tokenName, "-"))
-    {
-      return die();
-    }
+    kmemcpy(tokenName, "-");
   }
   else if(TOKEN_STAR == type)
   {
-    if(EXIT_SUCCESS != kmemcpy(tokenName, "*"))
-    {
-      return die();
-    }
+    kmemcpy(tokenName, "*");
   }
   else if(TOKEN_SLASH == type)
   {
-    if(EXIT_SUCCESS != kmemcpy(tokenName, "/"))
-    {
-      return die();
-    }
+    kmemcpy(tokenName, "/");
   }
   else
   {
-    if(EXIT_SUCCESS != kmemcpy(tokenName, "NIL"))
-    {
-      return die();
-    }
+    kmemcpy(tokenName, "NIL");
   }
-  return EXIT_SUCCESS;
 }
 
 static int
@@ -120,8 +102,8 @@ skipWhiteSpaces(void)
   return (ch);
 }
 
-int
-tokenize(Token* token)
+void
+scan(Token* token)
 {
   memset(token, 0, sizeof(Token));
 
@@ -131,43 +113,27 @@ tokenize(Token* token)
 
     if(EOF == ch)
     {
-      return EXIT_FAILURE;
+      return;
     }
-    else if('+' == ch)
+    if('+' == ch)
     {
       token->type = TOKEN_PLUS;
-      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "+"))
-      {
-        return die();
-      }
-      return EXIT_SUCCESS;
+      kmemcpy(token->literal.oprator, "+");
     }
     else if('-' == ch)
     {
       token->type = TOKEN_MINUS;
-      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "-"))
-      {
-        return die();
-      }
-      return EXIT_SUCCESS;
+      kmemcpy(token->literal.oprator, "-");
     }
     else if('*' == ch)
     {
       token->type = TOKEN_STAR;
-      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "*"))
-      {
-        return die();
-      }
-      return EXIT_SUCCESS;
+      kmemcpy(token->literal.oprator, "*");
     }
     else if('/' == ch)
     {
       token->type = TOKEN_SLASH;
-      if(EXIT_SUCCESS != kmemcpy(token->literal.oprator, "/"))
-      {
-        return die();
-      }
-      return EXIT_SUCCESS;
+      kmemcpy(token->literal.oprator, "/");
     }
     else 
     {
@@ -175,53 +141,15 @@ tokenize(Token* token)
       {
         token->type = TOKEN_INTEGER;
         token->literal.integer = scanInteger(ch);
-        return EXIT_SUCCESS;
       }
-    }
-    fprintf(stderr, "[ERROR] Unrecognised character %c on line %d\n", ch, line);
-    exit(EXIT_FAILURE);
-  }
-  return EXIT_SUCCESS;
-}
-
-int
-scan(const char* sourceFile)
-{
-  p_sourceFile = fopen(sourceFile, "r");
-  if (NULL == p_sourceFile)
-  {
-    fprintf(stderr, "Unable to open %s: %s\n", sourceFile, strerror(errno));
-    exit(EXIT_FAILURE);
-  }
-
-  Token token;
-  char outTokenString[outTokenStringLenght] = {'\0'};
-
-  while (EXIT_SUCCESS == tokenize(&token))
-  {
-    if(EXIT_SUCCESS == tokenTypeString(token.type, outTokenString))
-    {
-      if(TOKEN_PLUS == token.type)
+      else
       {
-        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
-      }
-      else if(TOKEN_MINUS == token.type)
-      {
-        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
-      }
-      else if(TOKEN_STAR == token.type)
-      {
-        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
-      }
-      else if(TOKEN_SLASH == token.type)
-      {
-        printf("Token %s, literal %s\n", outTokenString, token.literal.oprator);
-      }
-      else if(TOKEN_INTEGER == token.type)
-      {
-        printf("Token %s, literal %d\n", outTokenString, token.literal.integer);
+        kerror2i("[ERROR] Unrecognised character %c on line %d\n", ch, line);
       }
     }
   }
-  return EXIT_SUCCESS;
+  else
+  {
+    die1s("[ERROR] Token is NULL\n");
+  }
 }

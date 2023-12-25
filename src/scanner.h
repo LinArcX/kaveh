@@ -12,6 +12,7 @@ extern FILE	*p_sourceFile;
 
 typedef enum
 {
+  TOKEN_EOF,
   TOKEN_PLUS,
   TOKEN_MINUS,
   TOKEN_STAR,
@@ -31,6 +32,7 @@ typedef struct
   TokenLiteral literal;
 } Token;
 
-int scan(const char* sourceFile);
+extern Token token;
+void scan(Token *token);
 
 #endif

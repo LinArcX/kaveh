@@ -42,12 +42,12 @@ build_dir="build/$mode"
 mode_flags=""
 if [ "$mode" == "debug" ]; then
   app="kaveh"
-  mode_flags="-g -O0"
+  mode_flags="-g -O0 -DDEBUG"
 fi
 
 if [ "$mode" == "release" ]; then
   app="kaveh"
-  mode_flags="-O3 -DRELEASE"
+  mode_flags="-O3"
 fi
 
 if [ "$mode" == "test" ]; then
@@ -92,6 +92,7 @@ p() {
       gf2 --args ./$build_dir/$app ./tests/$selected &
       ;;
     "run")
+      clear
       echo ">>> Running $app - $mode"
       selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
       ./$build_dir/$app ./tests/$selected
