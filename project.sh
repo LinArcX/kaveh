@@ -47,7 +47,7 @@ fi
 
 if [ "$mode" == "release" ]; then
   app="kaveh"
-  mode_flags="-O3"
+  mode_flags="-O3 -DRELEASE"
 fi
 
 if [ "$mode" == "test" ]; then
@@ -60,7 +60,7 @@ _generateTags() {
 }
 
 p() {
-  commands=("build" "debug" "run" "clean" "generate tags"
+  commands=("build" "debug" "run" "build type" "clean" "generate tags"
     "search" "search/replace"
     "linter - splint" "linter - cppcheck" "valgrind"
     "nm - list symbols from object files" "ldd - print shared object dependencies"
@@ -95,6 +95,18 @@ p() {
       echo ">>> Running $app - $mode"
       selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
       ./$build_dir/$app ./tests/$selected
+      ;;
+    "build type")
+      build_types=("debug" "release")
+      build_type_selected=$(printf '%s\n' "${build_types[@]}" | fzf --header="build type:")
+
+      case $build_type_selected in
+        "debug")
+          sed -i 's/mode="debug"/mode="release"/' project.sh ;;
+        "release")
+          sed -i 's/mode="debug"/mode="release"/' project.sh ;;
+        *) ;;
+      esac
       ;;
     "clean")
       clear
