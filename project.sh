@@ -102,9 +102,11 @@ p() {
 
       case $build_type_selected in
         "debug")
-          sed -i 's/mode="debug"/mode="release"/' project.sh ;;
+          sed -i '38,40s/mode="release"/mode="debug"/' project.sh
+          source ./project.sh;;
         "release")
-          sed -i 's/mode="debug"/mode="release"/' project.sh ;;
+          sed -i '38,40s/mode="debug"/mode="release"/' project.sh
+          source ./project.sh;;
         *) ;;
       esac
       ;;
