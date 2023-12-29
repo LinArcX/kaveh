@@ -1,4 +1,7 @@
 p
 tags
+gmon.out
 build/*
 garbage/*
+uftrace.data/*
+uftrace.data.old/*

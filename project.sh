@@ -10,6 +10,7 @@
 # memory debugger: valgrind
 # system call tracer: strace
 # display info about .obj files: objdump
+# diff between two files/dirs: delta
 #
 # opening/editing files: noevim
 #   folding/unfolding: z Shift+m, z Shift+r
@@ -42,12 +43,12 @@ build_dir="build/$mode"
 mode_flags=""
 if [ "$mode" == "debug" ]; then
   app="kaveh"
-  mode_flags="-g -O0 -DDEBUG"
+  mode_flags="-g -pg -O0 -DDEBUG"
 fi
 
 if [ "$mode" == "release" ]; then
   app="kaveh"
-  mode_flags="-O3"
+  mode_flags="-O3 -pg"
 fi
 
 if [ "$mode" == "test" ]; then
@@ -63,7 +64,7 @@ p() {
   commands=("build" "debug" "run" "build type" "clean" "generate tags"
     "search" "search/replace"
     "linter - splint" "linter - cppcheck" "valgrind"
-    "nm - list symbols from object files" "ldd - print shared object dependencies"
+    "uftrace" "nm - list symbols from object files" "ldd - print shared object dependencies"
     "objdump -S: Intermix source code with disassembly"
     "objdump -g: Display debug information in object file"
     "objdump -d: Display assembler contents of executable sections"
@@ -138,6 +139,11 @@ p() {
       clear
       valgrind --leak-check=full --show-leak-kinds=all -s -v $build_dir/$app;; #src/*
 
+    "uftrace")
+      selected=$(/bin/ls ./tests/ -p | fzf --header="files:")
+      uftrace record ./$build_dir/$app tests/$selected
+      uftrace tui
+      ;;
     "nm - list symbols from object files")
       clear
       nm $build_dir/$app;;
