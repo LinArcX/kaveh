@@ -1,6 +1,10 @@
 #include <errno.h>
+
 #include "scanner.h"
 #include "parser.h"
+#include "generator.h"
+
+FILE	*p_outFile;
 
 int
 main(int argc, char *argv[])
@@ -18,6 +22,13 @@ main(int argc, char *argv[])
     return -1;
   }
 
+  p_outFile = fopen("out.s", "w");
+  if (NULL == p_outFile)
+  {
+    fprintf(stderr, "Unable to create out.s: %s\n", strerror(errno));
+    return -1;
+  }
+
   if(scan(&g_token))
   {
     struct ASTnode *node = {0};
@@ -25,8 +36,11 @@ main(int argc, char *argv[])
     if(NULL != node)
     {
       printf("%d\n", interpretAST(node));
+      generateCode(node);
+      fclose(p_outFile);
       return 0;
     }
   }
+  fclose(p_outFile);
   return -1;
 }

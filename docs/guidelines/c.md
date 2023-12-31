@@ -2,6 +2,7 @@
 - Just use If/Else mechanism. No Switch/Case, No Tenary Operator(?). 
   - Maybe you say switch cases are faster than If/Else. but if you use highest omptimizations, compiler will optimize your If/else. if you are still in doubt,
     compare the assembly output of highly optimized if/else with switch/case. which version is faster? choose that one.
+- No /* */ comment, just //
 - No strcpy, strncpy, strncpy_s. use memcpy like this:
   int copymem(struct err *err)
   {
