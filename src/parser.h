@@ -1,11 +1,10 @@
 #ifndef KAVEH_PARSER_H
 #define KAVEH_PARSER_H
 
-#include "scanner.h"
-
 typedef enum 
 {
-  A_ADD,
+  A_EOF = -1,
+  A_ADD = 0,
   A_SUBTRACT,
   A_MULTIPLY,
   A_DIVIDE,
@@ -20,10 +19,12 @@ struct ASTnode
   int intvalue;			
 };
 
-struct ASTnode *mkastnode(int op, struct ASTnode *left, struct ASTnode *right, int intvalue);
-struct ASTnode *mkastleaf(int op, int intvalue);
-struct ASTnode *mkastunary(int op, struct ASTnode *left, int intvalue);
-struct ASTnode *binexpr(Token* token);
+struct ASTnode *buildASTNode(int op, struct ASTnode *left, struct ASTnode *right, int intvalue);
+struct ASTnode *buildASTLeaf(int op, int intvalue);
+struct ASTnode *buildASTUnary(int op, struct ASTnode *left, int intvalue);
+
+struct ASTnode *parse(void);
+
 int interpretAST(struct ASTnode *n);
 
 #endif

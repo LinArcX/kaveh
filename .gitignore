@@ -3,5 +3,7 @@ tags
 gmon.out
 build/*
 garbage/*
+massif.out.*
 uftrace.data/*
+callgrind.out.*
 uftrace.data.old/*

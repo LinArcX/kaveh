@@ -2,7 +2,6 @@
 #define KAVEH_SCANNER_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -12,12 +11,12 @@ extern FILE	*p_sourceFile;
 
 typedef enum
 {
-  TOKEN_EOF,
-  TOKEN_PLUS,
+  TOKEN_EOF = -1,
+  TOKEN_PLUS = 0,
   TOKEN_MINUS,
   TOKEN_STAR,
   TOKEN_SLASH,
-  TOKEN_INTEGER
+  TOKEN_INTEGER,
 } TokenTypes;
 
 typedef struct
@@ -31,8 +30,8 @@ typedef struct
   TokenTypes type;
   TokenLiteral literal;
 } Token;
+extern Token g_token;
 
-extern Token token;
-void scan(Token *token);
+int scan(Token * token);
 
 #endif

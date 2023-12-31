@@ -1,10 +1,9 @@
 #include "kutil.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-void
+int
 kmemcpy(void *dest, const void *src)
 {
   size_t srcSize = sizeof(src);
@@ -12,7 +11,8 @@ kmemcpy(void *dest, const void *src)
 
   if(destSize < srcSize)
   {
-    die();
+    fprintf(stderr, "[%s, %s, %s, %d] *dest > *src\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+    return 0;
   }
   else
   {
@@ -28,60 +28,27 @@ kmemcpy(void *dest, const void *src)
     {
       memcpy(dest, src, srcSize);
     }
+    return 1;
   }
 }
 
-int
-kerror(void)
+char*
+errorType(int error_type)
 {
-  fprintf(stderr, "[ERROR] file: %s, line: %d", __FILE__, __LINE__);
-  return EXIT_FAILURE;
-}
-
-void
-kerror2i(char* message, int arg1, int arg2)
-{
-  fprintf(stderr, message, arg1, arg2);
-}
-
-void
-die(void)
-{
-  fprintf(stderr, "[ERROR] file: %s, line: %d", __FILE__, __LINE__);
-  exit(EXIT_FAILURE);
-}
-
-void
-die1i(char* message, int arg)
-{
-  fprintf(stderr, message, arg);
-  exit(EXIT_FAILURE);
-}
-
-void
-die2i(char* message, int arg1, int arg2)
-{
-  fprintf(stderr, message, arg1, arg2);
-  exit(EXIT_FAILURE);
-}
-
-void
-die1s(char* message)
-{
-  fprintf(stderr, message, NULL);
-  exit(EXIT_FAILURE);
-}
-
-void
-die2s(char* message, char* arg1)
-{
-  fprintf(stderr, message, arg1);
-  exit(EXIT_FAILURE);
-}
-
-void
-die3s(char* message, char* arg1, char* arg2)
-{
-  fprintf(stderr, message, arg1, arg2);
-  exit(EXIT_FAILURE);
+  if(ERROR_SCANNER == error_type)
+  {
+    return (char *)"Scanner Error";
+  }
+  else if(ERROR_PARSER == error_type)
+  {
+    return (char *)"Parser Error";
+  }
+  else if(ERROR_KAVEH == error_type)
+  {
+    return (char *)"Kaveh Error";
+  }
+  else
+  {
+    return (char *)"Uknown Error";
+  }
 }

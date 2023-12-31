@@ -1,46 +1,11 @@
-#include <errno.h>
-#include <stdlib.h>
-
 #include "scanner.h"
 #include "kutil.h"
 
-#define outTokenStringLenght 100
-Token token;
+Token g_token;
 
 int   line = 1;
 int	  lastChar = 0;
 FILE  *p_sourceFile;
-
-static void
-tokenTypeString(int type, char * const tokenName)
-{
-  memset(tokenName, 0, outTokenStringLenght);
-
-  if(TOKEN_INTEGER == type)
-  {
-    kmemcpy(tokenName, "INTEGER");
-  }
-  else if(TOKEN_PLUS == type)
-  {
-    kmemcpy(tokenName, "+");
-  }
-  else if(TOKEN_MINUS == type)
-  {
-    kmemcpy(tokenName, "-");
-  }
-  else if(TOKEN_STAR == type)
-  {
-    kmemcpy(tokenName, "*");
-  }
-  else if(TOKEN_SLASH == type)
-  {
-    kmemcpy(tokenName, "/");
-  }
-  else
-  {
-    kmemcpy(tokenName, "NIL");
-  }
-}
 
 static int
 nextChar(void)
@@ -49,8 +14,8 @@ nextChar(void)
 
   if (lastChar)
   {
-    ch = lastChar;	// Use the character put
-    lastChar = 0;   // back if there is one
+    ch = lastChar;	// Use the character put back if there is one
+    lastChar = 0;
     return ch;
   }
 
@@ -91,10 +56,10 @@ scanInteger(int ch)
   return val;
 }
 
-static char
+static int
 skipWhiteSpaces(void)
 {
-  char ch = nextChar();
+  int ch = nextChar();
   while (' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch || '\f' == ch)
   {
     ch = nextChar();
@@ -102,38 +67,55 @@ skipWhiteSpaces(void)
   return (ch);
 }
 
-void
-scan(Token* token)
+int
+scan(Token * token)
 {
   memset(token, 0, sizeof(Token));
 
   if(NULL != token)
   {
-    char ch = skipWhiteSpaces();
+    int ch = skipWhiteSpaces();
 
     if(EOF == ch)
     {
-      return;
+      token->type = TOKEN_EOF;
+      return 0;
     }
     if('+' == ch)
     {
       token->type = TOKEN_PLUS;
-      kmemcpy(token->literal.oprator, "+");
+      if(!kmemcpy(token->literal.oprator, "+"))
+      {
+        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        return 0;
+      }
     }
     else if('-' == ch)
     {
       token->type = TOKEN_MINUS;
-      kmemcpy(token->literal.oprator, "-");
+      if(!kmemcpy(token->literal.oprator, "-"))
+      {
+        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        return 0;
+      }
     }
     else if('*' == ch)
     {
       token->type = TOKEN_STAR;
-      kmemcpy(token->literal.oprator, "*");
+      if(!kmemcpy(token->literal.oprator, "*"))
+      {
+        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        return 0;
+      } 
     }
     else if('/' == ch)
     {
       token->type = TOKEN_SLASH;
-      kmemcpy(token->literal.oprator, "/");
+      if(!kmemcpy(token->literal.oprator, "/"))
+      {
+        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        return 0;
+      }
     }
     else 
     {
@@ -144,12 +126,14 @@ scan(Token* token)
       }
       else
       {
-        kerror2i("[ERROR] Unrecognised character %c on line %d\n", ch, line);
+        fprintf(stderr, "[%s, %s, %s, %d] Unrecognised character %c on line %d\n", errorType(ERROR_SCANNER), __FILE__, __func__, __LINE__, ch, line);
       }
     }
+    return 1;
   }
   else
   {
-    die1s("[ERROR] Token is NULL\n");
+    fprintf(stderr, "[%s, %s, %s, %d] token is NULL!\n", errorType(ERROR_SCANNER), __FILE__, __func__, __LINE__);
+    return 0;
   }
 }
