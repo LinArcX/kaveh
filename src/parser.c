@@ -5,6 +5,8 @@
 #include "kutil.h"
 
 static const char * ASTOperators[] = { "+", "-", "*", "/" };
+//                                 EOF  +   -    *   /  INTLIT
+static int g_operatorsPrecedence[] = {0, 10,  10,  20, 20, 0 };
 
 struct ASTnode* 
 buildASTNode(int op, struct ASTnode *left, struct ASTnode *right, int intvalue) 
@@ -85,12 +87,22 @@ primary(void)
   return NULL;
 }
 
+static int 
+operatorPrecedence(int tokenType) 
+{
+  int prec = g_operatorsPrecedence[tokenType];
+  if (prec == 0) 
+  {
+    fprintf(stderr, "[%s, %s, %s(), %d] Syntax Error on line: %d, token: %d\n", errorType(ERROR_PARSER), __FILE__, __func__, __LINE__, line, tokenType);
+  }
+  return prec;
+}
+
 // Return an AST tree whose root is a binary operator
 struct ASTnode *
-parse(void) 
+parse(int precedence) 
 {
-  int parserNodeType;
-  struct ASTnode *n = {0};
+  int tokenType;
   struct ASTnode *left = {0};
   struct ASTnode *right = {0};
 
@@ -98,19 +110,25 @@ parse(void)
   left = primary();
 
   // If no tokens left, return just the left node
-  if (g_token.type == TOKEN_EOF)
+  tokenType = g_token.type;
+  if (TOKEN_EOF == tokenType)
   {
     return left;
   }
 
-  parserNodeType = scannerTypeToParserType(g_token.type);
-  if(parserNodeType >= -1)
+  while(operatorPrecedence(tokenType) > precedence)
   {
     scan(&g_token);
-    right = parse();
-    n = buildASTNode(parserNodeType, left, right, 0);
+    right = parse(g_operatorsPrecedence[tokenType]);
+    left = buildASTNode(scannerTypeToParserType(tokenType), left, right, 0);
+    tokenType = g_token.type;
+
+    if (TOKEN_EOF == tokenType)
+    {
+      return left;
+    }
   }
-  return n;
+  return left;
 }
 
 int
@@ -128,6 +146,7 @@ interpretAST(struct ASTnode *n)
       rightval = interpretAST(n->right);
     }
 
+    #ifdef PARSER_LOG
     if (n->op == A_INTLIT)
     {
       printf("int %d\n", n->intvalue);
@@ -136,7 +155,8 @@ interpretAST(struct ASTnode *n)
     {
       printf("%d %s %d\n", leftval, ASTOperators[n->op], rightval);
     }
-
+    #endif
+    
     if(A_ADD == n->op)
     {
       return (leftval + rightval);

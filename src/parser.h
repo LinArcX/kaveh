@@ -3,8 +3,8 @@
 
 typedef enum 
 {
-  A_EOF = -1,
-  A_ADD = 0,
+  A_EOF = 0,
+  A_ADD, 
   A_SUBTRACT,
   A_MULTIPLY,
   A_DIVIDE,
@@ -23,7 +23,7 @@ struct ASTnode *buildASTNode(int op, struct ASTnode *left, struct ASTnode *right
 struct ASTnode *buildASTLeaf(int op, int intvalue);
 struct ASTnode *buildASTUnary(int op, struct ASTnode *left, int intvalue);
 
-struct ASTnode *parse(void);
+struct ASTnode *parse(int precedence);
 
 int interpretAST(struct ASTnode *n);
 

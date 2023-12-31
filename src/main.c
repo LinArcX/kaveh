@@ -21,7 +21,7 @@ main(int argc, char *argv[])
   if(scan(&g_token))
   {
     struct ASTnode *node = {0};
-    node = parse();		
+    node = parse(0);		
     if(NULL != node)
     {
       printf("%d\n", interpretAST(node));

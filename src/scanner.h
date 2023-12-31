@@ -11,8 +11,8 @@ extern FILE	*p_sourceFile;
 
 typedef enum
 {
-  TOKEN_EOF = -1,
-  TOKEN_PLUS = 0,
+  TOKEN_EOF = 0,
+  TOKEN_PLUS,
   TOKEN_MINUS,
   TOKEN_STAR,
   TOKEN_SLASH,

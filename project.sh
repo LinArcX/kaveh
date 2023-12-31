@@ -10,7 +10,7 @@
 # memory debugger: valgrind
 # system call tracer: strace
 # display info about .obj files: objdump
-# diff between two files/dirs: delta
+# diff between two files/dirs: delta <DIR1> <DIR2>
 #
 # opening/editing files: noevim
 #   folding/unfolding: z Shift+m, z Shift+r
