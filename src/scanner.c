@@ -86,7 +86,7 @@ scan(Token * token)
       token->type = TOKEN_PLUS;
       if(!kmemcpy(token->literal.oprator, "+"))
       {
-        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        fprintf(stderr, "[%s, %s, %s(), %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
         return 0;
       }
     }
@@ -95,7 +95,7 @@ scan(Token * token)
       token->type = TOKEN_MINUS;
       if(!kmemcpy(token->literal.oprator, "-"))
       {
-        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        fprintf(stderr, "[%s, %s, %s(), %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
         return 0;
       }
     }
@@ -104,7 +104,7 @@ scan(Token * token)
       token->type = TOKEN_STAR;
       if(!kmemcpy(token->literal.oprator, "*"))
       {
-        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        fprintf(stderr, "[%s, %s, %s(), %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
         return 0;
       } 
     }
@@ -113,7 +113,7 @@ scan(Token * token)
       token->type = TOKEN_SLASH;
       if(!kmemcpy(token->literal.oprator, "/"))
       {
-        fprintf(stderr, "[%s, %s, %s, %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
+        fprintf(stderr, "[%s, %s, %s(), %d]\n", errorType(ERROR_KAVEH), __FILE__, __func__, __LINE__);
         return 0;
       }
     }
@@ -126,14 +126,14 @@ scan(Token * token)
       }
       else
       {
-        fprintf(stderr, "[%s, %s, %s, %d] Unrecognised character %c on line %d\n", errorType(ERROR_SCANNER), __FILE__, __func__, __LINE__, ch, line);
+        fprintf(stderr, "[%s, %s, %s(), %d] Unrecognised character %c on line %d\n", errorType(ERROR_SCANNER), __FILE__, __func__, __LINE__, ch, line);
       }
     }
     return 1;
   }
   else
   {
-    fprintf(stderr, "[%s, %s, %s, %d] token is NULL!\n", errorType(ERROR_SCANNER), __FILE__, __func__, __LINE__);
+    fprintf(stderr, "[%s, %s, %s(), %d] token is NULL!\n", errorType(ERROR_SCANNER), __FILE__, __func__, __LINE__);
     return 0;
   }
 }

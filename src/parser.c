@@ -14,7 +14,7 @@ buildASTNode(int op, struct ASTnode *left, struct ASTnode *right, int intvalue)
   n = (struct ASTnode *) malloc(sizeof(struct ASTnode));
   if (NULL == n) 
   {
-    fprintf(stderr, "[%s, %s, %d] buildASTNode() --> Unable to malloc ASTNode!\n", errorType(ERROR_PARSER), __FILE__, __LINE__);
+    fprintf(stderr, "[%s, %s, %s(), %d] Unable to malloc ASTNode!\n", errorType(ERROR_PARSER), __FILE__, __func__, __LINE__);
     return NULL;
   }
 
@@ -37,24 +37,6 @@ buildASTUnary(int op, struct ASTnode *left, int intvalue)
   return (buildASTNode(op, left, NULL, intvalue));
 }
 
-// Parse a primary factor and return an AST node representing it.
-static struct ASTnode*
-primary(void) 
-{
-  // For an INTLIT token, make a leaf AST node for it and scan in the next token. Otherwise, a syntax error for any other token type.
-  if(TOKEN_INTEGER == g_token.type)
-  {
-    struct ASTnode * n = buildASTLeaf(A_INTLIT, g_token.literal.integer);
-    scan(&g_token);
-    return n;
-  }
-  else
-  {
-    fprintf(stderr, "[%s, %s, %d] primary() --> Syntax Error on line: %d\n", errorType(ERROR_PARSER), __FILE__, __LINE__, line);
-  }
-  return NULL;
-}
-
 int 
 scannerTypeToParserType(int token) 
 {
@@ -74,11 +56,33 @@ scannerTypeToParserType(int token)
   {
     return A_DIVIDE;
   }
+  else if(TOKEN_INTEGER == token)
+  {
+    return A_INTLIT;
+  }
   else
   {
-    fprintf(stderr, "[%s, %s, %d] scannerTypeToParserType() --> unknown token: %d on line %d\n", errorType(ERROR_PARSER), __FILE__, __LINE__, token, line);
+    fprintf(stderr, "[%s, %s, %s(), %d] Unknown token: %d on line %d\n", errorType(ERROR_PARSER), __FILE__, __func__, __LINE__, token, line);
     return -2;
   }
+}
+
+// Parse a primary factor and return an AST node representing it.
+static struct ASTnode*
+primary(void) 
+{
+  // For an INTLIT token, make a leaf AST node for it and scan in the next token. Otherwise, a syntax error for any other token type.
+  if(TOKEN_INTEGER == g_token.type)
+  {
+    struct ASTnode * n = buildASTLeaf(A_INTLIT, g_token.literal.integer);
+    scan(&g_token);
+    return n;
+  }
+  else
+  {
+    fprintf(stderr, "[%s, %s, %s(), %d] Syntax Error on line: %d\n", errorType(ERROR_PARSER), __FILE__, __func__, __LINE__, line);
+  }
+  return NULL;
 }
 
 // Return an AST tree whose root is a binary operator
@@ -155,7 +159,7 @@ interpretAST(struct ASTnode *n)
     }
     else
     {
-      fprintf(stderr, "[%s, %s, %d] interpretAST() --> Unknown AST Operator: %d!\n", errorType(ERROR_PARSER), __FILE__, __LINE__, n->op);
+      fprintf(stderr, "[%s, %s, %s(), %d] Unknown AST Operator: %d!\n", errorType(ERROR_PARSER), __FILE__, __func__, __LINE__, n->op);
     }
   }
   return 0;

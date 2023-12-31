@@ -1,5 +1,7 @@
 # C programming rules
-- Just use If/Else mechanism. No Switch/Case, No Tenary Operator(?).
+- Just use If/Else mechanism. No Switch/Case, No Tenary Operator(?). 
+  - Maybe you say switch cases are faster than If/Else. but if you use highest omptimizations, compiler will optimize your If/else. if you are still in doubt,
+    compare the assembly output of highly optimized if/else with switch/case. which version is faster? choose that one.
 - No strcpy, strncpy, strncpy_s. use memcpy like this:
   int copymem(struct err *err)
   {
@@ -11,7 +13,7 @@
       }
       return -1;
   }
-- Every function should return 0(or NULL for pointers) as error or 1 as succee. (except main() that returns 0 as success and anything else as failure.)
+- Every function should return 0(or NULL for pointers) as error or 1 as success. (except main() that returns 0 as success and anything else as failure.)
   - There is no need to return error code. errors should write to log file or stdout when errors happens.
   - Caller code should always check if the callee was successfull or not.
 - Brackets always goes to new line, not on the same line.
