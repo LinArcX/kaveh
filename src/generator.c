@@ -23,23 +23,23 @@ generateAST(struct ASTnode *n)
 
   if(A_ADD == n->op)
   {
-    return (cgadd(leftreg,rightreg));
+    return (cgAdd(leftreg,rightreg));
   }
   else if(A_SUBTRACT == n->op)
   {
-    return (cgsub(leftreg,rightreg));
+    return (cgSub(leftreg,rightreg));
   }
   else if(A_MULTIPLY == n->op)
   {
-    return (cgmul(leftreg,rightreg));
+    return (cgMul(leftreg,rightreg));
   }
   else if(A_DIVIDE == n->op)
   {
-    return (cgdiv(leftreg,rightreg));
+    return (cgDiv(leftreg,rightreg));
   }
   else if(A_INTLIT == n->op)
   {
-    return (cgload(n->intvalue));
+    return (cgLoad(n->intvalue));
   }
   else
   {
@@ -52,8 +52,10 @@ void
 generateCode(struct ASTnode *n) 
 {
   int reg;
-  cgpreamble();
+  cgPreamble();
+
   reg = generateAST(n);
-  cgprintint(reg);
-  cgpostamble();
+  cgPrintInt(reg);
+
+  cgPostamble();
 }

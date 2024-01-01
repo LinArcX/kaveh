@@ -1,19 +1,21 @@
 #ifndef KAVEH_ASM_GENERATOR_H
 #define KAVEH_ASM_GENERATOR_H
 
-void cgpreamble();
-void cgpostamble();
+#include <stdio.h>
 
-int cgload(int value);
-void cgprintint(int r);
+void cgPreamble();
+void cgPostamble();
 
-int cgadd(int r1, int r2);
-int cgsub(int r1, int r2);
-int cgmul(int r1, int r2);
-int cgdiv(int r1, int r2);
+int cgLoad(int value);
+void cgPrintInt(int r);
 
-void freeall_registers(void);
-static int alloc_register(void);
-static void free_register(int reg);
+int cgAdd(int r1, int r2);
+int cgSub(int r1, int r2);
+int cgMul(int r1, int r2);
+int cgDiv(int r1, int r2);
+
+void freeAllRegisters(void);
+static int allocateRegister(void);
+static int freeRegister(int reg);
 
 #endif
