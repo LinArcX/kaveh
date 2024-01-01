@@ -6,7 +6,7 @@
 #include "parser.h"
 #include "asmGenerator.h"
 
-static int 
+int 
 generateAST(struct ASTnode *n) 
 {
   int leftreg, rightreg;
@@ -46,6 +46,30 @@ generateAST(struct ASTnode *n)
     fprintf(stderr, "[%s, %s, %s(), %d] Unknown AST operator %d\n", errorType(ERROR_GENERATOR), __FILE__, __func__, __LINE__, n->op);
     exit(1);
   }
+}
+
+void 
+genpreamble()
+{
+  cgPreamble(); 
+}
+
+void
+genpostamble()
+{
+  cgPostamble(); 
+}
+
+void 
+genfreeregs()        
+{
+  freeAllRegisters(); 
+}
+
+void 
+genprintint(int reg) 
+{ 
+  cgPrintInt(reg); 
 }
 
 void

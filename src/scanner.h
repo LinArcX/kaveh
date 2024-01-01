@@ -5,9 +5,12 @@
 #include <string.h>
 #include <ctype.h>
 
+#define TEXTLEN     512             // Length of symbols in input
+
 extern int  line;
 extern int	lastChar;
 extern FILE	*p_sourceFile;
+extern char Text[TEXTLEN + 1];         // Last identifier scanned
 
 typedef enum
 {
@@ -16,6 +19,8 @@ typedef enum
   TOKEN_MINUS,
   TOKEN_STAR,
   TOKEN_SLASH,
+  TOKEN_SEMICOLON,
+  TOKEN_PRINT,
   TOKEN_INTEGER,
 } TokenTypes;
 

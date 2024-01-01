@@ -3,6 +3,7 @@
 #include "scanner.h"
 #include "parser.h"
 #include "kutil.h"
+#include "generator.h"
 
 static const char * ASTOperators[] = { "+", "-", "*", "/" };
 //                                 EOF  +   -    *   /  INTLIT
@@ -98,9 +99,56 @@ operatorPrecedence(int tokenType)
   return prec;
 }
 
+// Ensure that the current token is t, and fetch the next token. Otherwise throw an error 
+void 
+match(int t, char *what) 
+{
+  if (g_token.type == t)
+  {
+    scan(&g_token);
+  }
+  else
+  {
+    printf("%s expected on line %d\n", what, line);
+    exit(1);
+  }
+}
+
+void 
+semi(void) 
+{
+  match(TOKEN_SEMICOLON, ";");
+}
+
+// Parse one or more statements
+void 
+statements(void) 
+{
+  struct ASTnode *tree;
+  int reg;
+
+  while (1) {
+    // Match a 'print' as the first token
+    match(TOKEN_PRINT, "print");
+
+    // Parse the following expression and generate the assembly code
+    tree = parseExpressions(0);
+    reg = generateAST(tree);
+    genprintint(reg);
+    genfreeregs();
+
+    // Match the following semicolon and stop if we are at EOF
+    semi();
+    if (TOKEN_EOF == g_token.type)
+    {
+      return;
+    }
+  }
+}
+
 // Return an AST tree whose root is a binary operator
 struct ASTnode *
-parse(int precedence) 
+parseExpressions(int precedence) 
 {
   int tokenType;
   struct ASTnode *left = {0};
@@ -111,7 +159,7 @@ parse(int precedence)
 
   // If no tokens left, return just the left node
   tokenType = g_token.type;
-  if (TOKEN_EOF == tokenType)
+  if (TOKEN_SEMICOLON == tokenType)
   {
     return left;
   }
@@ -119,11 +167,11 @@ parse(int precedence)
   while(operatorPrecedence(tokenType) > precedence)
   {
     scan(&g_token);
-    right = parse(g_operatorsPrecedence[tokenType]);
+    right = parseExpressions(g_operatorsPrecedence[tokenType]);
     left = buildASTNode(scannerTypeToParserType(tokenType), left, right, 0);
     tokenType = g_token.type;
 
-    if (TOKEN_EOF == tokenType)
+    if (TOKEN_SEMICOLON == tokenType)
     {
       return left;
     }

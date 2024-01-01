@@ -1,3 +1,10 @@
+statements: statement
+          | statement statements
+          ;
+
+statement: 'print' expression ';'
+         ;
+
 expression: number
           | expression '*' expression
           | expression '/' expression
@@ -5,5 +12,5 @@ expression: number
           | expression '-' expression
           ;
 
-number:  T_INTLIT
-         ;
+number: T_INTLIT
+      ;

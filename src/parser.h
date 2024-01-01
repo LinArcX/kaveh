@@ -23,8 +23,9 @@ struct ASTnode *buildASTNode(int op, struct ASTnode *left, struct ASTnode *right
 struct ASTnode *buildASTLeaf(int op, int intvalue);
 struct ASTnode *buildASTUnary(int op, struct ASTnode *left, int intvalue);
 
-struct ASTnode *parse(int precedence);
+struct ASTnode *parseExpressions(int precedence);
 
 int interpretAST(struct ASTnode *n);
+void statements(void);
 
 #endif
